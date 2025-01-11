@@ -23,7 +23,7 @@ Route::group(['prefix' => 'contact', 'middleware' => ['web','auth:sanctum']], fu
     Route::get('/show/{id}', [ContactController::class, 'show'])
         ->name('contact.show');
 
-    Route::delete('/destroy/{id}', [ContactController::class, 'destroy'])
+    Route::delete('/{id}', [ContactController::class, 'destroy'])
         ->name('contact.destroy');
 
     Route::post('/update/{id}', [ContactController::class, 'update'])
@@ -39,5 +39,8 @@ Route::group(['prefix' => 'user', 'middleware' => ['web','auth:sanctum']], funct
 
     Route::get('/{id}', [UserController::class, 'show'])
         ->name('user.show');
+
+    Route::delete('/{id}', [UserController::class, 'destroy'])
+        ->name('user.destroy');
 
 });

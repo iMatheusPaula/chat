@@ -70,4 +70,30 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * Remove user
+     */
+    public function destroy(int $id): JsonResponse
+    {
+        try{
+            $authUser = Auth::user()->id;
+
+            if($authUser !== $id)
+                return response()->json('Unauthorized', Response::HTTP_UNAUTHORIZED);
+
+            $user = User::query()
+                ->where('id', '=', $authUser)
+                ->findOrFail($id);
+
+            if(!$user)
+                return response()->json('User not found', Response::HTTP_NOT_FOUND);
+
+            $user->delete();
+
+            return response()->json('', Response::HTTP_NO_CONTENT);
+        } catch (\Exception $e){
+            return response()->json($e, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

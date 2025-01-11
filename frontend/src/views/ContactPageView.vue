@@ -1,13 +1,15 @@
 <script setup>
 import {useRoute, useRouter} from "vue-router";
 import apiClient from "@/services/apiClient";
-import {onMounted, reactive} from "vue";
+import {computed, onMounted, reactive} from "vue";
 import {useToast} from "vue-toastification";
 import Image from "@/components/Image.vue";
 import IconLoading from "@/components/IconLoading.vue";
 import ReturnBtn from "@/components/ReturnBtn.vue";
+import {useAuthStore} from "@/stores/useAuthStore.js";
 
 const route = useRoute();
+const auth = useAuthStore();
 const router = useRouter();
 const toast = useToast();
 const state = reactive({
@@ -24,15 +26,18 @@ async function getUser() {
 }
 
 function bntDeleteHandler(){
-  router.push({ name: 'ContactDestroy', params: { id: state.user.id, name: state.user.name }})
+  router.push({ name: 'ContactDestroy', params: {
+    id: state.user.id,
+    name: state.user.name
+  }});
 }
 function btnUpdateHandler(){
-  router.push({ name: 'ContactUpdate', params: { id: state.user.id }})
+  router.push({ name: 'ContactUpdate', params: { id: state.user.id }});
 }
 
-const isCurrentUser = () => {
-  return state.user.id === auth.user.id
-}
+const isCurrentUser = computed(() => {
+  return state.user.id == auth.user.id;
+})
 onMounted(getUser);
 </script>
 <template>
@@ -59,7 +64,7 @@ onMounted(getUser);
       </dl>
       </div>
       <div class="w-full flex flex-row">
-        <button class="btn bg-blue-600 hover:bg-blue-500" @click="btnUpdateHandler">Editar</button>
+        <button class="btn bg-blue-600 hover:bg-blue-500" @click="btnUpdateHandler" v-if="isCurrentUser">Editar</button>
         <button class="btn bg-red-600 hover:bg-red-500 " @click="bntDeleteHandler">Deletar</button>
       </div>
     </div>

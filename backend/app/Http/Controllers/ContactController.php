@@ -78,13 +78,21 @@ class ContactController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(int $id): JsonResponse
     {
         try{
             $authUser = Auth::user()->id;
-            $contact = Contact::where('user_id', $authUser)->findOrFail($id);
+
+            $contact = Contact::query()
+                ->where('user_id', $authUser)
+                ->findOrFail($id);
+
+            if(!$contact)
+                return response()->json('Contact not found', Response::HTTP_NOT_FOUND);
+
             if($contact->image) Storage::disk('public')->delete($contact->image);
             $contact->delete();
+
             return response()->json('', Response::HTTP_NO_CONTENT);
         }
         catch (\Exception $e){
