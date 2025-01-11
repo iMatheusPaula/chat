@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
@@ -92,6 +93,41 @@ class UserController extends Controller
 
             return response()->json('', Response::HTTP_NO_CONTENT);
         } catch (\Exception $e){
+            return response()->json($e, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request): JsonResponse
+    {
+        try{
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'nullable|string|email|max:255|unique:users',
+                'phone' => 'nullable|string|max:255',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg',
+            ]);
+
+            $authUser = Auth::user()->id;
+            $user = User::query()
+                ->findOrFail($authUser);
+
+            $validatedData = $request->safe()->only(['name', 'email', 'phone']);
+            $user->update($validatedData);
+
+            if ($request->hasFile('image')) {
+                if ($user->image)
+                    Storage::disk('public')->delete($user->image);
+
+                $path = $request->file('image')->store('images', 'public');
+                $user->image = $path;
+                $user->save();
+            }
+            return response()->json('success', Response::HTTP_OK);
+        }
+        catch (\Exception $e){
             return response()->json($e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

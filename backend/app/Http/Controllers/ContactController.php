@@ -44,38 +44,6 @@ class ContactController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id): JsonResponse
-    {
-        try{
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'nullable|string|email|max:255',
-                'phone' => 'nullable|string|max:255',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg',
-            ]);
-            $authUser = Auth::user()->id;
-            $contact = Contact::where('user_id', '=', $authUser)->findOrFail($id);
-            if($contact){
-                $contact->name = $request->input('name');
-                $contact->phone = $request->input('phone');
-                $contact->email = $request->input('email');
-                if ($request->hasFile('image')) {
-                    if ($contact->image) Storage::disk('public')->delete($contact->image);
-                    $path = $request->file('image')->store('images', 'public');
-                    $contact->image = $path;
-                }
-                $contact->save();
-                return response()->json('success', Response::HTTP_OK);
-            }
-        }
-        catch (\Exception $e){
-            return response()->json($e, Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    /**
      * Remove the specified resource from storage.
      */
     public function destroy(int $id): JsonResponse

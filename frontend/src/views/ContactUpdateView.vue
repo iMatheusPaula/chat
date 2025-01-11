@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, reactive} from "vue";
+import {computed, onMounted, reactive} from "vue";
 import apiClient from "@/services/apiClient.js";
 import {useToast} from "vue-toastification";
 import {useRoute, useRouter} from "vue-router";
@@ -20,20 +20,17 @@ function handleFileUpload(event){
   state.image = event.target.files[0];
 }
 
-async function getContact() {
+async function getUser() {
   state.isLoading = true;
-  await apiClient.get(`/api/contact/show/${route.params.id}`).then((response) => {
-    state.name = response.data.name;
-    state.email = response.data.email;
-    state.phone = response.data.phone;
-    //state.image = response.data.image;
-  }).catch((error) => {
-    toast.error("Falha ao carregar o usuario");
-  });
+  await apiClient.get(`/api/user/${auth.user.id}`).then((response) => {
+    state.user = response.data;
+  }).catch(() => toast.error("Falha ao carregar o usuario"));
   state.isLoading = false;
 }
-async function updateContact(){
-  await apiClient.post(`/api/contact/update/${route.params.id}`, {
+
+async function updateUser(){
+  state.isLoading = true;
+  await apiClient.p(`/api/user`, {
     name: state.name,
     email: state.email,
     phone: state.phone,
@@ -43,24 +40,25 @@ async function updateContact(){
       'Content-Type': 'multipart/form-data'
     }
   }).then(() => {
-    toast.success(`${state.name} foi atualizado com sucesso.`);
+    toast.success('Perfil atualizado com sucesso.');
     router.back();
   })
       .catch((error) => {
         if(error.response.status === 404) toast.error("Usuário não encontrado.");
         else toast.error("Ocorreu um erro no servidor. Tente novamente mais tarde.");
-        console.log(error);
       })
+  state.isLoading = false;
 }
-onMounted(getContact);
+
+onMounted(getUser);
 </script>
 <template>
   <div v-if="state.isLoading">
     <IconLoading />
   </div>
   <div v-else class="bg-white rounded-2xl shadow-2xl w-96 lg:w-1/3 justify-center px-6 py-20 lg:px-8">
-    <h1 class="text-gray-900 tracking-tight font-bold text-2xl text-center mb-3">Editar {{ state.name }}</h1>
-    <form @submit.prevent="updateContact" class="flex flex-col p-2" type="multipart/form-data">
+    <h1 class="text-gray-900 tracking-tight font-bold text-2xl text-center mb-3">Editar Perfil</h1>
+    <form @submit.prevent="updateUser" class="flex flex-col p-2" type="multipart/form-data">
       <input id="name" v-model="state.name" type="text" placeholder="Nome" />
       <input id="phone" v-model="state.phone" type="text" placeholder="Telefone" />
       <input id="email" v-model="state.email" type="text" placeholder="E-mail" />

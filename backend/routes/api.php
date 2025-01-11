@@ -43,4 +43,7 @@ Route::group(['prefix' => 'user', 'middleware' => ['web','auth:sanctum']], funct
     Route::delete('/{id}', [UserController::class, 'destroy'])
         ->name('user.destroy');
 
+    Route::patch('/', [UserController::class, 'update'])
+        ->name('user.update');
+
 });
