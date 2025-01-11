@@ -6,6 +6,7 @@ use App\Models\Contact;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -34,12 +35,16 @@ class UserController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified user.
      */
-    public function show(Request $request): JsonResponse
+    public function show(int $id): JsonResponse
     {
         try{
-            return response()->json($request->user(), Response::HTTP_OK);
+            $authUser = Auth::user()->id;
+            $response = User::query()
+                ->where('id', '=', $id)
+                ->firstOrFail();
+            return response()->json($response, Response::HTTP_OK);
         } catch (\Exception $e){
             return response()->json($e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }

@@ -37,4 +37,7 @@ Route::group(['prefix' => 'user', 'middleware' => ['web','auth:sanctum']], funct
     Route::get('/search', [UserController::class, 'search'])
         ->name('user.search');
 
+    Route::get('/{id}', [UserController::class, 'show'])
+        ->name('user.show');
+
 });

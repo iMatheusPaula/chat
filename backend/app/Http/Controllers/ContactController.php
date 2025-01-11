@@ -44,22 +44,6 @@ class ContactController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id): JsonResponse
-    {
-        try{
-            $authUser = Auth::user()->id;
-            $response = Contact::where('id', '=', $id)
-                ->where('user_id', '=', $authUser)
-                ->firstOrFail();
-            return response()->json($response, Response::HTTP_OK);
-        } catch (\Exception $e){
-            return response()->json($e, Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id): JsonResponse

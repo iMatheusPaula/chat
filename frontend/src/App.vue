@@ -13,14 +13,24 @@ async function logoutHandler() {
     toast.success("Desconectado.");
   });
 }
+
+function editProfileHandler() {
+  router.push({ name: 'ContactPage', params: { id: auth.user.id }})
+}
 </script>
 <template>
   <header class="relative flex bg-white p-5 w-full items-center justify-between shadow-xl">
     <div>
       <RouterLink to="/">Chat 🫦</RouterLink>
     </div>
-    <div v-if="auth.isLoggedIn" class="block text-black/90">
+    <div v-if="auth.isLoggedIn" class="block text-black/90 space-x-2">
       <span class="px-3">Olá, {{ auth.user?.name }}</span>
+      <span
+          class="bg-black text-white rounded-md px-3 py-2.5 text-xs uppercase transition duration-200 hover:bg-gray-800 cursor-pointer"
+          @click="editProfileHandler"
+      >
+        Meu perfil
+      </span>
       <span
         class="bg-black text-white rounded-md px-3 py-2.5 text-xs uppercase transition duration-200 hover:bg-gray-800 cursor-pointer"
         @click="logoutHandler"
