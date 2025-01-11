@@ -26,28 +26,16 @@ class ContactController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new contact
      */
     public function store(Request $request): JsonResponse
     {
         try {
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'nullable|string|email|max:255',
-                'phone' => 'nullable|string|max:255',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg',
-            ]);
+            $request->validate(['id' => 'required|int|exists:users,id']);
             $authUserId = Auth::user()->id;
-            $path = null;
-            if($request->hasFile('image')){
-                $path = $request->file('image')->store('images', 'public');
-            }
+
             $contact = new Contact();
-            $contact->name = $request->input('name');
-            $contact->phone = $request->input('phone');
-            $contact->email = $request->input('email');
-            $contact->image = $path;
-            $contact->user_id = $authUserId;
+            //TODO: ver como vai ficar logica de criação de contato
             $contact->save();
             return response()->json('success', Response::HTTP_CREATED);
         } catch (\Exception $e){

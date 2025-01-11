@@ -45,4 +45,24 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * Search for users by name
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function search(Request $request): JsonResponse
+    {
+        try{
+            $request->validate(['name' => 'string']);
+            $response = User::query()
+                ->where('name', 'like', '%'.$request->input('name').'%')
+                ->get();
+
+            return response()->json($response, Response::HTTP_OK);
+        } catch (\Exception $e){
+            return response()->json($e, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }
