@@ -1,0 +1,52 @@
+services:
+  php:
+    build: ./
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/backend
+    working_dir: /backend
+    command: sh -c "php artisan serve --host=0.0.0.0"
+    networks:
+      - my-rede
+    tty: true
+    depends_on:
+      - mariadb
+    env_file:
+      - ./backend/.env
+
+  mariadb:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_DATABASE: 'chat'
+    ports:
+      - "3306:3306"
+    volumes:
+      - 'mariadb-data:/var/lib/mysql'
+    networks:
+      - my-rede
+    env_file:
+      - ./backend/.env
+
+  vue:
+    image: node:latest
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/frontend
+    working_dir: /frontend
+    command: sh -c "yarn dev --host 0.0.0.0"
+#    command: tail -f /dev/null
+    networks:
+      - my-rede
+
+networks:
+  my-rede:
+    driver: bridge
+volumes:
+  mariadb-data:
+    driver: local
