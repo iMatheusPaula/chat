@@ -31,8 +31,11 @@ Route::group(['prefix' => 'contact', 'middleware' => ['web','auth:sanctum']], fu
 });
 
 Route::group(['prefix' => 'user', 'middleware' => ['web','auth:sanctum']], function () {
-    Route::get('/', [UserController::class, 'show'])
-        ->name('user.show')->middleware(['web','auth:sanctum']);
+    Route::get('/', [UserController::class, 'me'])
+        ->name('user.me')->middleware(['web','auth:sanctum']);
+
+    Route::get('/list', [UserController::class, 'index'])
+        ->name('user.index');
 
     Route::get('/search', [UserController::class, 'search'])
         ->name('user.search');
@@ -47,3 +50,4 @@ Route::group(['prefix' => 'user', 'middleware' => ['web','auth:sanctum']], funct
         ->name('user.update');
 
 });
+

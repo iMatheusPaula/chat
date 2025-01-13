@@ -39,7 +39,7 @@ services:
     volumes:
       - ./frontend:/frontend
     working_dir: /frontend
-    command: sh -c "yarn dev --host 0.0.0.0"
+    command: sh -c "yarn dev --host=0.0.0.0"
 #    command: tail -f /dev/null
     networks:
       - my-rede
