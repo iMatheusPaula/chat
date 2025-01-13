@@ -68,7 +68,10 @@ class UserController extends Controller
 
     /**
      * List of users
-     * TODO essa funcao so existia na ContactController, nao tinha aqui, enquanto nao add amigos tem q usar ela
+     * TODO essa funcao so existia na ContactController, ela lista todos os usuarios cadastrados
+     *
+     * @param Request $request
+     * @return JsonResponse
      * */
     public function index(Request $request): JsonResponse
     {

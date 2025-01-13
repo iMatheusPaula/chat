@@ -18,9 +18,7 @@ class ContactController extends Controller
     public function index(Request $request): JsonResponse
     {
         try{
-//            $authUser = Auth::user()->id;
-//            $response = Contact::where('user_id', '=', $authUser)->get();
-            $response = Contact::with('user')->get();
+            $response = Contact::with(['user:name,email,phone,image'])->get();
             return response()->json($response, Response::HTTP_OK);
         } catch (\Exception $e){
             return response()->json($e, Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -49,13 +47,15 @@ class ContactController extends Controller
     public function store(Request $request): JsonResponse
     {
         try {
-            $request->validate(['id' => 'required|int|exists:users,id']);
-            $authUserId = Auth::user()->id;
+            $validated = $request->validate([
+                'id' => 'required|exists:users,id', // user_id deve existir na tabela users
+            ]);
 
-            $contact = new Contact();
-            //TODO: ver como vai ficar logica de criação de contato
-            $contact->save();
-            return response()->json('success', Response::HTTP_CREATED);
+            $contact = Contact::create([
+                'user_id' => $validated['id'],
+            ]);
+
+            return response()->json(['message' => 'success', 'contact' => $contact], Response::HTTP_CREATED);
         } catch (\Exception $e){
             return response()->json($e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
