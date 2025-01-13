@@ -13,7 +13,7 @@ const state = reactive({
 
 async function showContacts(){
   state.isLoading = true;
-  await apiClient.get('/api/contact/index').then((response) => {
+  await apiClient.get('/api/user/list').then((response) => {
     state.contacts = response.data;
   }).catch((error) => {
     toast.error("Erro ao carregar os contatos.");

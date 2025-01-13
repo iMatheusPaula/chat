@@ -36,15 +36,45 @@ class UserController extends Controller
     }
 
     /**
-     * Display the specified user.
+     * Display the auth user
      */
-    public function show(int $id): JsonResponse
+    public function me(): JsonResponse
     {
         try{
             $authUser = Auth::user()->id;
             $response = User::query()
+                ->where('id', '=', $authUser)
+                ->firstOrFail();
+            return response()->json($response, Response::HTTP_OK);
+        } catch (\Exception $e){
+            return response()->json($e, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Display the specific user.
+     */
+    public function show(int $id): JsonResponse
+    {
+        try {
+            $response = User::query()
                 ->where('id', '=', $id)
                 ->firstOrFail();
+            return response()->json($response, Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * List of users
+     * TODO essa funcao so existia na ContactController, nao tinha aqui, enquanto nao add amigos tem q usar ela
+     * */
+    public function index(Request $request): JsonResponse
+    {
+        try{
+            $user = User::select('name', 'email', 'phone')->get();
+            $response = $user;
             return response()->json($response, Response::HTTP_OK);
         } catch (\Exception $e){
             return response()->json($e, Response::HTTP_INTERNAL_SERVER_ERROR);
